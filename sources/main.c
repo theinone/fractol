@@ -14,29 +14,27 @@
 
 int mandelbrot(t_frac *frac)
 {
+	double	pr;
+	double	pi;
+	int		i;
+	double	newRe;
+	double	newIm;
+	double	oldRe;
+	double	oldIm;
+	pr = 1.5 * (frac->x - W_WIDTH / 2) / (0.5 * frac->zoom * W_WIDTH) + frac->movex;
+	pi = (frac->y - W_HEIGHT / 2) / (0.5 * frac->zoom * W_HEIGHT) + frac->movey;
+	newRe = newIm = oldRe = oldIm = 0;
 
-  //each iteration, it calculates: newz = oldz*oldz + p, where p is the current pixel, and oldz stars at the origin
-  double pr, pi;           //real and imaginary part of the pixel p
-  double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old z
-  int maxIterations = frac->max_iter;//after how much iterations the function should stop
-    //calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-    pr = 1.5 * (frac->x - W_WIDTH / 2) / (0.5 * frac->zoom * W_WIDTH) + frac->movex;
-    pi = (frac->y - W_HEIGHT / 2) / (0.5 * frac->zoom * W_HEIGHT) + frac->movey;
-    newRe = newIm = oldRe = oldIm = 0; //these should start at 0,0
-    //"i" will represent the number of iterations
-    int i;
-    //start the iteration process
-    for(i = 0; i < maxIterations; i++)
+	i = 0;
+	while (i < frac->max_iter)
     {
-      //remember value of previous iteration
-      oldRe = newRe;
-      oldIm = newIm;
-      //the actual iteration, the real and imaginary part are calculated
-      newRe = oldRe * oldRe - oldIm * oldIm + pr;
-      newIm = 2 * oldRe * oldIm + pi;
-      //if the point is outside the circle with radius 2: stop
-      if((newRe * newRe + newIm * newIm) > 4) 
-	  	break;
+		oldRe = newRe;
+		oldIm = newIm;
+		newRe = oldRe * oldRe - oldIm * oldIm + pr;
+		newIm = 2 * oldRe * oldIm + pi;
+		if((newRe * newRe + newIm * newIm) > 4) 
+			break;
+		i++;
     }
 	return (i);
 }
