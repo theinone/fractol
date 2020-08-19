@@ -13,7 +13,7 @@
 NAME    =   fractol
 CC		=	gcc
 CFLAGS  =  
-SRC     =   ./sources/main.c
+SRC     =   ./sources/main.c ./sources/fractal_functions.c
 OBJ     =   main.o
 MLX_LNK	= -L mlx/ -lmlx -framework OpenGL -framework Appkit
 

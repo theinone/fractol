@@ -11,13 +11,11 @@
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
-#include <stdio.h>
 
 int			mandelbrot(t_frac *frac)
 {
 	frac->pr = 2.0 * (frac->x - W_WIDTH / 2) / (0.5 * frac->zoom * W_WIDTH) + frac->movex;
 	frac->pi = 2.0 * (frac->y - W_HEIGHT / 2) / (0.5 * frac->zoom * W_HEIGHT) + frac->movey;
-	
 	frac->new_re = 0;
 	frac->new_im = 0;
 	frac->old_re = 0;
@@ -40,7 +38,6 @@ int			mandelbar(t_frac *frac)
 {
 	frac->pr = 2.0 * (frac->x - W_WIDTH / 2) / (0.5 * frac->zoom * W_WIDTH) + frac->movex;
 	frac->pi = 2.0 * (frac->y - W_HEIGHT / 2) / (0.5 * frac->zoom * W_HEIGHT) + frac->movey;
-
 	frac->new_re = 0;
 	frac->new_im = 0;
 	frac->old_re = 0;
@@ -92,7 +89,7 @@ void		draw(t_frac *frac)
 			if (frac->fractal == 0)
 				set_color(frac, mandelbrot(frac));
 			else if (frac->fractal == 1)
-				set_color(frac, mandelbrot(frac));
+				set_color(frac, julia(frac));
 			else
 				set_color(frac, mandelbar(frac));
 			frac->data[frac->y * W_WIDTH + frac->x] = frac->color;
@@ -103,6 +100,39 @@ void		draw(t_frac *frac)
 	}
 	mlx_put_image_to_window(frac->mlx_ptr, frac->win, frac->img_ptr, 0, 0);
 }
+
+int julia_movement(int x, int y, t_frac *frac)
+{
+	if (x > 150 && x < 450 && y > 150 && y < 450)
+	{
+		frac->julia_re = 2.0 * (x - W_WIDTH / 2) / (0.5 * frac->zoom * W_WIDTH) + frac->movex;
+		frac->julia_im = 2.0 * (y - W_HEIGHT / 2) / (0.5 * frac->zoom * W_HEIGHT) + frac->movey;
+		draw(frac);
+	}
+	return (0);
+}
+
+int julia(t_frac *frac)
+{
+	frac->new_re = 2.0 * (frac->x - W_WIDTH / 2) / (0.5 * frac->zoom * W_WIDTH) + frac->movex;
+	frac->new_im = 2.0 * (frac->y - W_HEIGHT / 2) / (0.5 * frac->zoom * W_HEIGHT) + frac->movey;
+
+	mlx_hook(frac->win, 6, (1L << 6), julia_movement, frac);
+
+	frac->iterations = 0;
+	while (frac->iterations < frac->max_iter)
+	{
+		frac->old_re = frac->new_re;
+		frac->old_im = frac->new_im;
+		frac->new_re = frac->old_re * frac->old_re - frac->old_im * frac->old_im + frac->julia_re;
+		frac->new_im = 2 * frac->old_re * frac->old_im + frac->julia_im;
+		if ((frac->new_re * frac->new_re + frac->new_im * frac->new_im) > 4)
+			break ;
+		frac->iterations++;
+	}
+	return (frac->iterations);
+}
+
 
 int			keypressed(int keycode, t_frac *frac)
 {
@@ -116,11 +146,11 @@ int			keypressed(int keycode, t_frac *frac)
 		frac->movex = frac->movex + (0.1 / frac->zoom);
 	else if (keycode == ARROW_RIGHT)
 		frac->movex = frac->movex - (0.1 / frac->zoom);
-	else if (keycode == NUMPAD_PLUS)
+	else if (keycode == NUMPAD_PLUS || keycode == KEY_PLUS)
 		frac->zoom =  frac->zoom * 2;
-	else if (keycode == NUMPAD_MINUS)
+	else if (keycode == NUMPAD_MINUS || keycode == KEY_MINUS)
 		frac->zoom =  frac->zoom / 2;
-	else if (keycode == NUMPAD_ENTER)
+	else if (keycode == NUMPAD_ENTER || keycode == KEY_ENTER)
 		frac->max_iter += 10;
 	draw(frac);
 	return (0);
@@ -139,11 +169,21 @@ int			zoom(int button, int x, int y, t_frac *frac)
 		draw(frac);
 	}
 	return (0);
+	//TODO pitäiskö olla void?
+}
+
+int			mouse_event(int button, int x, int y, t_frac *frac)
+{
+	if (button == MOUSE_SCROLL_UP || button == MOUSE_SCROLL_DOWN)
+		zoom(button, x, y, frac);
+	return (0);
+	//TODO pitäiskö olla void?
 }
 
 void init_fractol(char *name)
 {
     t_frac frac;
+
     frac.mlx_ptr = mlx_init();
 	if (ft_strcmp(name, "mandelbrot") == 0)
 		frac.fractal = 0;
@@ -158,12 +198,12 @@ void init_fractol(char *name)
     frac.endian = 1;
     frac.data = (int *)mlx_get_data_addr(frac.img_ptr, &frac.bpp, &frac.size_l, &frac.endian);
     frac.zoom = 0.5;
-    frac.max_iter = 60;
+    frac.max_iter = 50;
     frac.movex = 0.1;
     frac.movey = 0.1;
     draw(&frac);
     mlx_key_hook(frac.win, keypressed, &frac);
-    mlx_mouse_hook(frac.win, zoom, &frac);
+    mlx_mouse_hook(frac.win, mouse_event, &frac);
     mlx_loop(frac.mlx_ptr);
 }
 

@@ -57,6 +57,14 @@ typedef struct		s_frac
 	double			new_im;
 	double			old_re;
 	double			old_im;
+	double			julia_re;
+	double			julia_im;
 }					t_frac;
+
+int			mandelbrot(t_frac *frac);
+int			mandelbar(t_frac *frac);
+int			julia_movement(int x, int y, t_frac *frac);
+int			julia(t_frac *frac);
+void		draw(t_frac *frac);
 
 #endif
