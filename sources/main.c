@@ -56,7 +56,22 @@ int			mandelbar(t_frac *frac)
 	return (frac->iterations);
 }
 
-void		set_color(t_frac *frac, int i)
+void		color_scheme_1(t_frac *frac, int i)
+{
+	int c;
+
+	c = 0;
+	if (i == 0 || i >= frac->max_iter)
+		frac->color = 0x000000;
+	else
+	{
+		frac->color = 0x000055;
+		while (c++ < i)
+			frac->color++;
+	}
+}
+
+void		color_scheme_2(t_frac *frac, int i)
 {
 	if (i == 0 || i >= frac->max_iter)
 		frac->color = 0x000000;
@@ -76,6 +91,14 @@ void		set_color(t_frac *frac, int i)
 		frac->color = 0xA7C8F2;
 	else
 		frac->color = 0xff0000;
+}
+
+void		set_color(t_frac *frac, int i)
+{
+	if (frac->color_scheme == 1)
+		color_scheme_1(frac, i);
+	else if(frac->color_scheme == 2)
+		color_scheme_2(frac, i);
 }
 
 void		draw(t_frac *frac)
@@ -136,6 +159,7 @@ int julia(t_frac *frac)
 
 int			keypressed(int keycode, t_frac *frac)
 {
+	ft_putnbr(keycode);
 	if (keycode == MAIN_PAD_ESC)
 		exit(0);
 	else if (keycode == ARROW_UP)
@@ -152,6 +176,10 @@ int			keypressed(int keycode, t_frac *frac)
 		frac->zoom =  frac->zoom / 2;
 	else if (keycode == NUMPAD_ENTER || keycode == KEY_ENTER)
 		frac->max_iter += 10;
+	else if (keycode == KEY_ONE)
+		frac->color_scheme = 1;
+	else if (keycode == KEY_TWO)
+		frac->color_scheme = 2;
 	draw(frac);
 	return (0);
 }
@@ -199,6 +227,7 @@ void init_fractol(char *name)
     frac.data = (int *)mlx_get_data_addr(frac.img_ptr, &frac.bpp, &frac.size_l, &frac.endian);
     frac.zoom = 0.5;
     frac.max_iter = 50;
+	frac.color_scheme = 1;
     frac.movex = 0.1;
     frac.movey = 0.1;
     draw(&frac);

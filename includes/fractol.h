@@ -49,6 +49,7 @@ typedef struct		s_frac
 	double			movex;
 	double			movey;
 	int				color;
+	int				color_scheme;
 	double			zoom;
 	double			pr;
 	double			pi;
@@ -66,5 +67,6 @@ int			mandelbar(t_frac *frac);
 int			julia_movement(int x, int y, t_frac *frac);
 int			julia(t_frac *frac);
 void		draw(t_frac *frac);
+void		set_color(t_frac *frac, int i);
 
 #endif

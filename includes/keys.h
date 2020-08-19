@@ -23,7 +23,11 @@
 # define ARROW_RIGHT        123
 # define NUMPAD_PLUS        69
 # define NUMPAD_MINUS       78
+# define KEY_PLUS           27
+# define KEY_MINUS          44
 # define NUMPAD_ENTER       76
-
+# define KEY_ENTER          36
+# define KEY_ONE            18
+# define KEY_TWO            19
 
 #endif
